@@ -3,6 +3,9 @@ import React, { useState } from "react";
 import Hero from "../sections/Hero";
 import FeaturedCards from "../ui/FeaturedCards";
 import ProductCard from "../ui/ProductCard";
+import Benefits from "../sections/Benefits";
+import Testimonials from "../sections/Testimonials";
+import InteractiveSocial from "../sections/InteractiveSocial";
 
 const Home = () => {
   const [activeTag, setActiveTag] = useState<
@@ -19,7 +22,9 @@ const Home = () => {
       <Hero />
       <FeaturedCards />
 
-      <h1 className="flex justify-center text-3xl mt-6 font-semibold text-center ">Even More Offers</h1>
+      <h1 className="flex justify-center text-3xl mt-6 font-semibold text-center ">
+        Even More Offers
+      </h1>
 
       {/* Filter Options */}
       <div className="flex items-center mt-4 mb-5 gap-5 text-2xl font-semibold px-3 md:px-8 lg:px-14">
@@ -42,6 +47,9 @@ const Home = () => {
 
       {/* Pass Filter to Slider */}
       <ProductCard filterTag={activeTag} />
+      <Benefits />
+      <Testimonials />
+      <InteractiveSocial />
     </div>
   );
 };
