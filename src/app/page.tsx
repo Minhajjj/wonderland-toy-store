@@ -1,9 +1,18 @@
+import React from "react";
+import TopBanner from "../components/layout/TopBanner";
+import Navbar from "../components/layout/Navbar";
+import Home from "../components/pages/Home";
+import Footer from "../components/layout/Footer";
 
-export default function Home() {
+export default function Page() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      
-    </div>
+    <>
+      <TopBanner />
+      <Navbar />
+      <main >
+       <Home/>
+      </main>
+      <Footer/>
+    </>
   );
 }
- 
