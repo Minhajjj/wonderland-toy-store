@@ -6,6 +6,7 @@ import ProductCard from "../ui/ProductCard";
 import Benefits from "../sections/Benefits";
 import Testimonials from "../sections/Testimonials";
 import InteractiveSocial from "../sections/InteractiveSocial";
+import StayConnected from "../sections/StayConnected";
 
 const Home = () => {
   const [activeTag, setActiveTag] = useState<
@@ -50,6 +51,7 @@ const Home = () => {
       <Benefits />
       <Testimonials />
       <InteractiveSocial />
+      <StayConnected/>
     </div>
   );
 };

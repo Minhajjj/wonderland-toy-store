@@ -1,127 +1,112 @@
-import { useState } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay } from "swiper/modules";
-import { FaBrain, FaPaintBrush, FaPaw, FaRocket } from "react-icons/fa";
-import "swiper/css";
+import { FaQuestionCircle, FaLightbulb, FaSmileBeam } from "react-icons/fa";
 
-// Social media images
-const socialMediaPosts = Array.from({ length: 12 }).map(
-  (_, i) => `https://i.pravatar.cc/200?img=${i + 20}`
-);
-
-// Fun QA questions
-const quizQuestions = [
+const FAQs = [
   {
-    question: "What sparks your kid's imagination? ✨",
-    options: [
-      { label: "STEM Adventures 🧠", icon: <FaBrain /> },
-      { label: "Creative Arts 🎨", icon: <FaPaintBrush /> },
-      { label: "Animal Fun 🐾", icon: <FaPaw /> },
-      { label: "Space & Rockets 🚀", icon: <FaRocket /> },
-    ],
+    icon: <FaQuestionCircle className="text-pink-500 text-3xl" />,
+    q: "Is WonderLand safe for toddlers?",
+    a: "Absolutely! All our toys meet international safety certifications.",
   },
   {
-    question: "Pick the play style they love most 🎯",
-    options: [
-      { label: "Role-Play 👑", icon: "👑" },
-      { label: "Building Blocks 🧱", icon: "🧱" },
-      { label: "Puzzle Challenges 🧩", icon: "🧩" },
-      { label: "Outdoor Fun 🌳", icon: "🌳" },
-    ],
+    icon: <FaLightbulb className="text-purple-500 text-3xl" />,
+    q: "Do toys help kids learn?",
+    a: "Yes! Our toys are designed with educators to boost creativity & early learning.",
+  },
+  {
+    icon: <FaSmileBeam className="text-blue-500 text-3xl" />,
+    q: "Why parents trust WonderLand?",
+    a: "We mix learning + fun + safety — keeping kids engaged for hours!",
   },
 ];
 
-const InteractiveSocial = () => {
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
-
-  const handleOptionClick = (option: string) => {
-    setSelectedOption(option);
-    setTimeout(() => {
-      setSelectedOption(null);
-      setCurrentQuestion((prev) => (prev + 1) % quizQuestions.length);
-    }, 1000);
-  };
-
+const VideoQASection = () => {
   return (
-    <section className="py-16 max-w-7xl mx-auto px-6">
-      <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">
-        Discover & Play with WonderLand Toys
-      </h2>
+    <section className="py-20 px-6 md:px-12">
+      <div className="grid md:grid-cols-2 gap-12 max-w-7xl mx-auto items-center">
 
-      <div className="relative flex flex-col lg:flex-row gap-8 items-start">
-        {/* Left: Video */}
-        <div className="lg:w-2/3 rounded-3xl overflow-hidden shadow-lg relative">
-          <video
-            src="https://www.w3schools.com/html/mov_bbb.mp4" // Replace with your video
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="w-full h-full object-cover rounded-3xl"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-black/10 rounded-3xl"></div>
-        </div>
-
-        {/* Right: QA / Quiz */}
-        <div className="lg:w-1/3 flex flex-col justify-start relative lg:-mt-8">
-          <div className="bg-gradient-to-tr from-pink-100 via-purple-100 to-blue-100 rounded-2xl shadow-xl p-6 lg:w-[95%]">
-            <h3 className="text-xl font-semibold mb-4 text-gray-900">
-              {quizQuestions[currentQuestion].question}
-            </h3>
-            <div className="flex flex-col gap-3">
-              {quizQuestions[currentQuestion].options.map((option) => (
-                <button
-                  key={option.label}
-                  onClick={() => handleOptionClick(option.label)}
-                  className={`flex items-center gap-2 px-4 py-3 rounded-lg font-medium transition-all justify-start hover:scale-105 ${
-                    selectedOption === option.label
-                      ? "bg-gradient-to-r from-pink-300 via-purple-300 to-blue-300 text-white border-none"
-                      : "bg-white text-gray-900 border border-gray-300"
-                  }`}
+        {/* LEFT — WONDERLAND TEXT WITH VIDEO INSIDE */}
+        <div className="relative w-full h-[400px] sm:h-[450px] md:h-[500px] flex items-center justify-center">
+          
+          {/* SVG Mask approach */}
+          <svg width="100%" height="100%" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid meet" className="w-full h-full">
+            <defs>
+              <mask id="textMask">
+                <rect width="100%" height="100%" fill="black"/>
+                <text
+                  x="400"
+                  y="200"
+                  textAnchor="middle"
+                  fill="white"
+                  fontSize="120"
+                  fontWeight="900"
+                  fontFamily="Arial, sans-serif"
+                  letterSpacing="3"
+                  strokeWidth="3"
+                  stroke="white"
                 >
-                  <span className="text-lg">{option.icon}</span>
-                  <span>{option.label}</span>
-                </button>
-              ))}
-            </div>
-            {selectedOption && (
-              <p className="mt-4 text-center text-gray-900 font-semibold">
-                Selected: <span className="text-blue-600">{selectedOption}</span>
-              </p>
-            )}
-          </div>
+                  <tspan fontSize="190" strokeWidth="5">W</tspan>ONDER
+                </text>
+                <text
+                  x="400"
+                  y="350"
+                  textAnchor="middle"
+                  fill="white"
+                  fontSize="120"
+                  fontWeight="900"
+                  fontFamily="Arial, sans-serif"
+                  letterSpacing="3"
+                  strokeWidth="3"
+                  stroke="white"
+                >
+                  <tspan fontSize="190" strokeWidth="5">L</tspan>AND
+                </text>
+              </mask>
+            </defs>
+            
+            <foreignObject width="800" height="500" mask="url(#textMask)">
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                style={{
+                  width: "800px",
+                  height: "500px",
+                  objectFit: "cover"
+                }}
+              >
+                <source src="/samplevideo2.mp4" type="video/mp4" />
+              </video>
+            </foreignObject>
+          </svg>
+        </div>
 
-          {/* Social Media Feed */}
-          <div className="mt-6 lg:mt-12">
-            <Swiper
-              modules={[Autoplay]}
-              spaceBetween={6}
-              slidesPerView={2}
-              loop
-              autoplay={{ delay: 0, disableOnInteraction: false }}
-              speed={4000}
-              breakpoints={{
-                640: { slidesPerView: 2 },
-                768: { slidesPerView: 3 },
-                1024: { slidesPerView: 3 },
-              }}
-            >
-              {[...socialMediaPosts, ...socialMediaPosts].map((img, idx) => (
-                <SwiperSlide key={idx} className="flex justify-center">
-                  <img
-                    src={img}
-                    alt={`Social post ${idx + 1}`}
-                    className="rounded-xl object-cover w-full h-28 hover:scale-105 transition-transform"
-                  />
-                </SwiperSlide>
-              ))}
-            </Swiper>
+        {/* RIGHT — Q/A PANEL */}
+        <div className="space-y-6">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+            Questions? We've Got Answers!
+          </h2>
+
+          <div className="space-y-5">
+            {FAQs.map((item, index) => (
+              <div
+                key={index}
+                className="p-5 rounded-xl shadow-md border border-purple-200/30 bg-white/80 backdrop-blur"
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  {item.icon}
+                  <h3 className="font-semibold text-gray-900 text-lg">
+                    {item.q}
+                  </h3>
+                </div>
+                <p className="text-gray-700 ml-11">{item.a}</p>
+              </div>
+            ))}
           </div>
         </div>
+
       </div>
     </section>
   );
 };
 
-export default InteractiveSocial;
+export default VideoQASection;
