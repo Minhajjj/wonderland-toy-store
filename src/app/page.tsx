@@ -7,12 +7,9 @@ import Footer from "../components/layout/Footer";
 export default function Page() {
   return (
     <>
-      <TopBanner />
-      <Navbar />
-      <main >
-       <Home/>
+      <main>
+        <Home />
       </main>
-      <Footer/>
     </>
   );
 }
