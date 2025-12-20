@@ -1,4 +1,4 @@
-import { FaStar } from "react-icons/fa";
+import { IoStarSharp } from "react-icons/io5";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import "swiper/css";
@@ -63,7 +63,7 @@ const Testimonials = () => {
                   />
                   <div className="flex mb-2">
                     {Array.from({ length: t.rating }).map((_, i) => (
-                      <FaStar key={i} className="text-yellow-400 mr-1" />
+                      <IoStarSharp key={i} className="text-yellow-400 mr-1" />
                     ))}
                   </div>
                   <p className="text-gray-900 text-base text-center mb-1">
