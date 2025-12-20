@@ -2,7 +2,7 @@
 
 "use client";
 
-import { useAuth } from "../../context/AuthProvider";
+import { useAuth } from "../../../context/AuthProvider";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 

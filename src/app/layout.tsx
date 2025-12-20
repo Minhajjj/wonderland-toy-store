@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Navbar from "../components/layout/Navbar";
-import Footer from "../components/layout/Footer";
-import TopBanner from "../components/layout/TopBanner";
 import { AuthProvider } from "../context/AuthProvider";
 
 const geistSans = Geist({
@@ -31,12 +28,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-cream-bg`}
       >
-        <AuthProvider>
-          <TopBanner />
-          <Navbar />
-          {children}
-          <Footer />
-        </AuthProvider>
+        {/* The AuthProvider wraps the entire app so users 
+            stay logged in whether they are in the store or admin.
+        */}
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

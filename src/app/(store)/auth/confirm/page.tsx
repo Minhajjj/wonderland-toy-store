@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import supabase from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
-import Loader from "../../../components/shared/Loader";
+import Loader from "../../../../components/shared/Loader";
 
 export default function AuthConfirmPage() {
   const router = useRouter();
