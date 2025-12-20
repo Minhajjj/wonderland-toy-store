@@ -4,7 +4,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Scrollbar } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/scrollbar";
-import { FaStar } from "react-icons/fa";
+import { IoStarSharp } from "react-icons/io5";
 import { LuCake } from "react-icons/lu";
 import { PiJar } from "react-icons/pi";
 import Secondary_Button from "./Secondary_Button";
@@ -326,7 +326,7 @@ const ProductCard: React.FC<ProductCardSliderProps> = ({ filterTag }) => {
 
                 <div className="flex items-center mb-2 gap-3 text-left">
                   <div className="flex items-center">
-                    <FaStar className="text-yellow-400 mr-1" />
+                    <IoStarSharp className="text-yellow-400 mr-1" />
                     <span className="text-gray-600">{product.rating}</span>
                   </div>
 

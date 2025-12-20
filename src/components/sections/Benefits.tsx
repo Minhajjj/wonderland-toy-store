@@ -1,4 +1,6 @@
-import { FaShippingFast, FaLeaf, FaHandsHelping, FaBrain, FaPaintBrush, FaStar } from "react-icons/fa";
+import { FaShippingFast, FaLeaf, FaHandsHelping, FaBrain, FaPaintBrush } from "react-icons/fa";
+import { IoStarSharp } from "react-icons/io5";
+
 
 const benefits = [
   { icon: <FaShippingFast size={40} className="text-pink-500" />, title: "Free Shipping", subtitle: "On orders over $50" },
@@ -6,7 +8,7 @@ const benefits = [
   { icon: <FaHandsHelping size={40} className="text-blue-500" />, title: "Handcrafted Quality", subtitle: "Made with care" },
   { icon: <FaBrain size={40} className="text-green-500" />, title: "Educational Fun", subtitle: "Stimulates creativity & learning" },
   { icon: <FaPaintBrush size={40} className="text-yellow-500" />, title: "Creative Play", subtitle: "Encourages imagination" },
-  { icon: <FaStar size={40} className="text-orange-500" />, title: "Parent-Approved", subtitle: "Trusted by families worldwide" },
+  { icon: <IoStarSharp size={40} className="text-orange-500" />, title: "Parent-Approved", subtitle: "Trusted by families worldwide" },
 ];
 
 const Benefits = () => {
