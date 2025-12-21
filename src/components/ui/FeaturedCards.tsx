@@ -47,7 +47,7 @@ const FeaturedCards = () => {
           className="w-55 bg-white rounded-2xl shadow-md hover:shadow-2xl overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-2 border-2 border-transparent hover:border-[#FF6B9D]/30"
         >
           {/* Card Header with Option B Gradient */}
-          <div className="bg-gradient-to-r from-[#FF6B9D] via-[#9B59B6] to-[#4FA8D5] text-white text-center py-3 text-lg font-bold tracking-wide">
+          <div className="bg-linear-to-r from-[#FF6B9D] via-[#9B59B6] to-[#4FA8D5] text-white text-center py-3 text-lg font-bold tracking-wide">
             {card.title}
           </div>
 
