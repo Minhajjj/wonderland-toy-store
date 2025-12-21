@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link"; // Added for button functionality
 import {
   CurrencyDollarIcon,
   ShoppingBagIcon,
   UserGroupIcon,
-  ArrowTrendingUpIcon,
-  EllipsisHorizontalIcon,
   ArrowPathIcon,
+  ArrowUpIcon,
+  ChartBarIcon,
 } from "@heroicons/react/24/outline";
 import {
   AreaChart,
@@ -34,7 +35,6 @@ export default function AdminDashboard() {
   useEffect(() => {
     async function fetchDashboardData() {
       try {
-        // Use .catch to return an empty array if the table doesn't exist yet
         const [orders, customers, products] = await Promise.all([
           getOrders().catch(() => []),
           getCustomers().catch(() => []),
@@ -42,14 +42,17 @@ export default function AdminDashboard() {
         ]);
 
         const totalRev = orders.reduce(
-          (sum: number, order: any) => sum + (order.total_amount || 0),
+          (sum: number, order: any) => sum + (Number(order.total_amount) || 0),
           0
         );
 
         const topToys = Array.isArray(products)
           ? [...products]
-              .sort((a, b) => (b.soldCount || 0) - (a.soldCount || 0))
-              .slice(0, 4)
+              .sort(
+                (a, b) =>
+                  (Number(b.sold_count) || 0) - (Number(a.sold_count) || 0)
+              )
+              .slice(0, 5)
           : [];
 
         setData({
@@ -69,111 +72,113 @@ export default function AdminDashboard() {
 
   if (loading)
     return (
-      <div className="flex h-96 items-center justify-center">
-        <ArrowPathIcon className="h-10 w-10 text-[#9B59B6] animate-spin" />
+      <div className="flex h-[60vh] items-center justify-center">
+        <ArrowPathIcon className="h-10 w-10 text-indigo-500 animate-spin" />
       </div>
     );
 
   return (
-    <div className="space-y-8 animate-fade-in-up">
+    <div className="space-y-8 pb-10">
       {/* Header */}
-      <div className="flex justify-between items-end">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black text-gray-900 tracking-tight">
-            Dashboard
+          <h1 className="text-3xl font-black text-gray-900 tracking-tight uppercase">
+            Store Overview
           </h1>
-          <p className="text-gray-500 mt-1">
-            Overview of your store's performance.
+          <p className="text-gray-500 font-medium tracking-tight">
+            Real-time performance metrics.
           </p>
         </div>
-        <div className="text-sm text-gray-500 bg-white px-4 py-2 rounded-xl border border-gray-100 shadow-sm">
-          Last Updated:{" "}
-          <span className="font-bold text-gray-800">Just now</span>
+        <div className="flex items-center gap-2 text-[10px] font-black text-gray-400 bg-white border border-gray-100 px-4 py-2 rounded-2xl shadow-sm self-start uppercase tracking-widest">
+          <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse" />
+          Status: Online
         </div>
       </div>
 
-      {/* Stats Grid - Now using LIVE data */}
+      {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <StatCard
           name="Total Revenue"
-          value={`$${data.revenue.toLocaleString()}`}
+          value={`$${data.revenue.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+          })}`}
           icon={CurrencyDollarIcon}
-          color="text-[#FF6B9D]"
-          bg="bg-[#FF6B9D]/10"
-          change="+12%" // You can calculate this by comparing to last month later
+          color="text-emerald-600"
+          bg="bg-emerald-50"
+          trend="+12%"
         />
         <StatCard
           name="Total Orders"
-          value={data.ordersCount.toString()}
+          value={data.ordersCount.toLocaleString()}
           icon={ShoppingBagIcon}
-          color="text-[#9B59B6]"
-          bg="bg-[#9B59B6]/10"
-          change="+5%"
+          color="text-indigo-600"
+          bg="bg-indigo-50"
+          trend="+5%"
         />
         <StatCard
           name="Total Customers"
-          value={data.customersCount.toString()}
+          value={data.customersCount.toLocaleString()}
           icon={UserGroupIcon}
-          color="text-[#4FA8D5]"
-          bg="bg-[#4FA8D5]/10"
-          change="+2%"
+          color="text-blue-600"
+          bg="bg-blue-50"
+          trend="+3%"
         />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Revenue Graph (Can be updated later to show real daily data) */}
-        <div className="lg:col-span-2 bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
-          <h2 className="text-xl font-bold text-gray-900 mb-8">
-            Weekly Revenue Forecast
+        {/* Revenue Chart */}
+        <div className="lg:col-span-2 bg-white p-6 rounded-4xl border border-gray-100 shadow-sm">
+          <h2 className="text-sm font-black text-gray-900 uppercase tracking-widest mb-8">
+            Revenue Forecast
           </h2>
-          <div className="h-80 w-full">
+          <div className="h-72 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart
                 data={[
-                  { name: "Mon", revenue: data.revenue * 0.1 },
-                  { name: "Tue", revenue: data.revenue * 0.15 },
-                  { name: "Wed", revenue: data.revenue * 0.12 },
-                  { name: "Thu", revenue: data.revenue * 0.18 },
-                  { name: "Fri", revenue: data.revenue * 0.25 },
-                  { name: "Sat", revenue: data.revenue * 0.3 },
-                  { name: "Sun", revenue: data.revenue * 0.2 },
+                  { name: "Mon", rev: data.revenue * 0.1 },
+                  { name: "Tue", rev: data.revenue * 0.15 },
+                  { name: "Wed", rev: data.revenue * 0.12 },
+                  { name: "Thu", rev: data.revenue * 0.18 },
+                  { name: "Fri", rev: data.revenue * 0.25 },
+                  { name: "Sat", rev: data.revenue * 0.3 },
+                  { name: "Sun", rev: data.revenue * 0.2 },
                 ]}
               >
                 <defs>
                   <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#9B59B6" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#9B59B6" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#6366F1" stopOpacity={0.1} />
+                    <stop offset="95%" stopColor="#6366F1" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid
                   strokeDasharray="3 3"
                   vertical={false}
-                  stroke="#E5E7EB"
+                  stroke="#F3F4F6"
                 />
                 <XAxis
                   dataKey="name"
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: "#9CA3AF", fontSize: 12 }}
+                  tick={{ fill: "#9CA3AF", fontSize: 11, fontWeight: 700 }}
                   dy={10}
                 />
                 <YAxis
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: "#9CA3AF", fontSize: 12 }}
+                  tick={{ fill: "#9CA3AF", fontSize: 11, fontWeight: 700 }}
                 />
                 <Tooltip
                   contentStyle={{
-                    borderRadius: "12px",
+                    borderRadius: "16px",
                     border: "none",
-                    boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+                    boxShadow: "0 10px 15px -3px rgba(0,0,0,0.1)",
                   }}
                 />
                 <Area
                   type="monotone"
-                  dataKey="revenue"
-                  stroke="#9B59B6"
-                  strokeWidth={3}
+                  dataKey="rev"
+                  stroke="#6366F1"
+                  strokeWidth={4}
                   fillOpacity={1}
                   fill="url(#colorRev)"
                 />
@@ -182,63 +187,70 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Top Products - Real Data */}
-        <div className="bg-gradient-to-br from-[#FF6B9D] via-[#9B59B6] to-[#4FA8D5] p-1 rounded-3xl shadow-xl">
-          <div className="bg-white h-full rounded-[20px] p-6 flex flex-col">
-            <h3 className="text-lg font-bold text-gray-900 mb-6">
-              Best Selling Toys
-            </h3>
-            <div className="space-y-6 flex-1">
-              {data.topProducts.map((product) => (
-                <div key={product.id} className="flex items-center gap-4">
-                  <img
-                    src={product.image || "/placeholder-toy.jpg"}
-                    className="h-12 w-12 rounded-xl object-cover bg-gray-100"
-                    alt={product.title}
-                  />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-gray-900 truncate">
-                      {product.title}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {product.soldCount || 0} sold
-                    </p>
-                  </div>
-                  <span className="text-sm font-bold text-[#9B59B6]">
-                    ${product.price}
-                  </span>
+        {/* Best Sellers - Black BG Removed */}
+        <div className="bg-white p-6 rounded-4x1 border border-gray-100 shadow-sm flex flex-col">
+          <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest mb-6">
+            Best Sellers
+          </h3>
+          <div className="space-y-5 flex-1">
+            {data.topProducts.map((product) => (
+              <div key={product.id} className="flex items-center gap-4 group">
+                <img
+                  src={product.main_image || "/placeholder.jpg"}
+                  className="h-12 w-12 rounded-2xl object-cover bg-gray-50 border border-gray-100 shadow-sm"
+                  alt={product.title}
+                />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-gray-900 truncate group-hover:text-indigo-600 transition-colors">
+                    {product.title}
+                  </p>
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                    {product.sold_count || 0} units sold
+                  </p>
                 </div>
-              ))}
-              {data.topProducts.length === 0 && (
-                <p className="text-center text-gray-400 py-10">
-                  No sales data yet.
-                </p>
-              )}
-            </div>
-            <button className="w-full mt-6 py-3 rounded-xl bg-gray-50 text-gray-600 font-bold text-sm hover:bg-gray-100 transition">
-              Manage Inventory
-            </button>
+                <div className="text-right">
+                  <p className="text-sm font-black text-gray-900">
+                    ${product.price}
+                  </p>
+                </div>
+              </div>
+            ))}
+            {data.topProducts.length === 0 && (
+              <p className="text-center text-gray-400 py-10 italic text-sm">
+                No sales data found.
+              </p>
+            )}
           </div>
+
+          {/* Working Analytics Link */}
+          <Link
+            href="/admin/analytics"
+            className="w-full mt-6 py-4 rounded-2xl bg-indigo-600 text-white font-black text-xs uppercase tracking-widest hover:bg-indigo-700 transition-all text-center shadow-lg shadow-indigo-100 active:scale-95"
+          >
+            View Full Analytics
+          </Link>
         </div>
       </div>
     </div>
   );
 }
 
-// Reusable Stat Component
-function StatCard({ name, value, icon: Icon, color, bg, change }: any) {
+function StatCard({ name, value, icon: Icon, color, bg, trend }: any) {
   return (
-    <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all">
+    <div className="bg-white p-6 rounded-4x1 border border-gray-100 shadow-sm group hover:border-indigo-200 transition-all">
       <div className="flex justify-between items-start">
-        <div className={`p-3 rounded-2xl ${bg} ${color}`}>
+        <div className={`p-4 rounded-[20px] ${bg} ${color}`}>
           <Icon className="h-6 w-6" />
         </div>
-        <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-green-50 text-green-600">
-          {change}
-        </span>
+        <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-green-50 text-green-600 text-[10px] font-black">
+          <ArrowUpIcon className="h-3 w-3" />
+          {trend}
+        </div>
       </div>
-      <div className="mt-5">
-        <h3 className="text-sm font-medium text-gray-400">{name}</h3>
+      <div className="mt-6">
+        <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+          {name}
+        </h3>
         <p className="text-3xl font-black text-gray-900 mt-1">{value}</p>
       </div>
     </div>

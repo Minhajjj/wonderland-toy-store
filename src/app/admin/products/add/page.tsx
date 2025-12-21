@@ -10,8 +10,6 @@ import {
   XMarkIcon,
   ArrowPathIcon,
   StarIcon,
-  ShoppingBagIcon,
-  ChatBubbleLeftIcon,
   ArchiveBoxIcon,
   TagIcon,
   ClipboardDocumentListIcon,
@@ -25,14 +23,10 @@ export default function AddProductFullPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  // Image State
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
-
-  // Local State for Features
   const [newFeature, setNewFeature] = useState("");
 
-  // Frontend State (CamelCase)
   const [product, setProduct] = useState<
     Omit<UnifiedProduct, "id" | "image" | "images" | "available">
   >({
@@ -90,59 +84,42 @@ export default function AddProductFullPage() {
     }
 
     setLoading(true);
-    console.log("🚀 Starting Publish Process...");
-
     try {
-      // 1. Upload Images to 'product-images' bucket
-      console.log("📸 Step 1: Uploading images...");
       const uploadPromises = imageFiles.map((file) => uploadProductImage(file));
       const uploadedUrls = await Promise.all(uploadPromises);
-      console.log("✅ Step 1 Success. URLs:", uploadedUrls);
 
-      // 2. Map Frontend state to Database Columns (Snake Case)
-      // This solves your 'image' column not found error
+      // Mapping Frontend keys to your SQL Snake_Case columns
       const dbPayload = {
         title: product.title,
         description: product.description,
         category: product.category,
         tag: product.tag,
         price: product.price,
-        original_price: product.originalPrice, // Mapped
+        original_price: product.originalPrice,
         rating: product.rating,
         reviews: product.reviews,
-        sold_count: product.soldCount, // Mapped
+        sold_count: product.soldCount,
         ages: product.ages,
         pieces: product.pieces,
         available: product.stock > 0,
-        main_image: uploadedUrls[0], // Mapped to SQL column
-        all_images: uploadedUrls, // Mapped to SQL column
+        main_image: uploadedUrls[0],
+        all_images: uploadedUrls,
         features: product.features,
         specifications: product.specifications,
       };
 
-      console.log("📦 Step 2: Payload prepared for Supabase:", dbPayload);
-
-      // 3. Save to Database
-      console.log("💾 Step 3: Sending to products table...");
       await addProduct(dbPayload);
-      console.log("🎉 Step 3 Success: Product added to DB!");
-
       router.push("/admin/products");
     } catch (err: any) {
-      console.error("❌ PUBLISH FAILED:", err);
-      // Detailed error log to identify specific column issues
-      if (err.hint) console.error("💡 Supabase Hint:", err.hint);
-      if (err.details) console.error("📝 Error Details:", err.details);
-
-      alert(`Publish Error: ${err.message || "Unknown error"}`);
+      console.error("Publish Error:", err);
+      alert(`Error: ${err.message}`);
     } finally {
       setLoading(false);
-      console.log("🏁 Loading state cleared.");
     }
   };
 
   return (
-    <div className="max-w-7xl mx-auto pb-20 px-4 space-y-8">
+    <div className="max-w-7xl mx-auto pb-20 px-4 space-y-8 animate-in fade-in duration-500">
       {/* Header */}
       <div className="flex items-center justify-between py-8 border-b border-gray-100">
         <div className="flex items-center gap-4">
@@ -159,7 +136,7 @@ export default function AddProductFullPage() {
         <button
           onClick={handlePublish}
           disabled={loading}
-          className="bg-indigo-600 text-white px-10 py-3 rounded-2xl font-bold shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition-all disabled:opacity-50 flex items-center gap-3"
+          className="bg-indigo-600 text-white px-10 py-3 rounded-2xl font-bold hover:bg-indigo-700 transition-all disabled:opacity-50 flex items-center gap-3"
         >
           {loading && <ArrowPathIcon className="h-5 w-5 animate-spin" />}
           {loading ? "Publishing..." : "Publish Product"}
@@ -167,9 +144,8 @@ export default function AddProductFullPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Main Content */}
         <div className="lg:col-span-8 space-y-8">
-          {/* Media Section */}
+          {/* 1. Media */}
           <section className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm space-y-6">
             <h2 className="font-bold text-xl flex items-center gap-2 text-gray-800">
               <PhotoIcon className="h-6 w-6 text-indigo-500" /> Media Gallery
@@ -178,23 +154,19 @@ export default function AddProductFullPage() {
               {previews.map((url, i) => (
                 <div
                   key={i}
-                  className="relative aspect-square rounded-3xl overflow-hidden border-2 border-gray-50"
+                  className="relative aspect-square rounded-3xl overflow-hidden border"
                 >
-                  <img
-                    src={url}
-                    className="w-full h-full object-cover"
-                    alt="Preview"
-                  />
+                  <img src={url} className="w-full h-full object-cover" />
                   <button
                     onClick={() => removeImage(i)}
-                    className="absolute top-3 right-3 p-1.5 bg-red-500 text-white rounded-xl"
+                    className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-lg"
                   >
                     <XMarkIcon className="h-4 w-4" />
                   </button>
                 </div>
               ))}
               <label className="aspect-square rounded-3xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center cursor-pointer hover:bg-indigo-50 transition-all">
-                <PlusIcon className="h-10 w-10 text-gray-300" />
+                <PlusIcon className="h-10 text-gray-300" />
                 <input
                   type="file"
                   multiple
@@ -206,66 +178,41 @@ export default function AddProductFullPage() {
             </div>
           </section>
 
-          {/* Metrics Section */}
-          <section className="bg-indigo-600 p-8 rounded-[2rem] grid grid-cols-1 sm:grid-cols-3 gap-8 text-white">
-            <div className="space-y-1">
-              <label className="text-[10px] font-black uppercase opacity-80">
-                Base Rating
-              </label>
-              <input
-                type="number"
-                step="0.1"
-                className="w-full bg-indigo-500/50 border-none rounded-2xl p-3 font-bold"
-                value={product.rating || ""}
-                onChange={(e) =>
-                  setProduct({
-                    ...product,
-                    rating:
-                      e.target.value === "" ? 0 : parseFloat(e.target.value),
-                  })
-                }
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="text-[10px] font-black uppercase opacity-80">
-                Review Count
-              </label>
-              <input
-                type="number"
-                className="w-full bg-indigo-500/50 border-none rounded-2xl p-3 font-bold"
-                value={product.reviews || ""}
-                onChange={(e) =>
-                  setProduct({
-                    ...product,
-                    reviews:
-                      e.target.value === "" ? 0 : parseInt(e.target.value),
-                  })
-                }
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="text-[10px] font-black uppercase opacity-80">
-                Units Sold
-              </label>
-              <input
-                type="number"
-                className="w-full bg-indigo-500/50 border-none rounded-2xl p-3 font-bold"
-                value={product.soldCount || ""}
-                onChange={(e) =>
-                  setProduct({
-                    ...product,
-                    soldCount:
-                      e.target.value === "" ? 0 : parseInt(e.target.value),
-                  })
-                }
-              />
+          {/* 2. Technical Specs (MISSING FIELD ADDED) */}
+          <section className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm space-y-6">
+            <h2 className="font-bold text-xl flex items-center gap-2 text-gray-800">
+              <BeakerIcon className="h-6 w-6 text-indigo-500" /> Technical
+              Specifications
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {Object.keys(product.specifications).map((key) => (
+                <div key={key}>
+                  <label className="text-[10px] font-black text-gray-400 uppercase">
+                    {key}
+                  </label>
+                  <input
+                    className="w-full bg-gray-50 border-none rounded-xl p-3 mt-1"
+                    placeholder={`Enter ${key}...`}
+                    value={(product.specifications as any)[key]}
+                    onChange={(e) =>
+                      setProduct({
+                        ...product,
+                        specifications: {
+                          ...product.specifications,
+                          [key]: e.target.value,
+                        },
+                      })
+                    }
+                  />
+                </div>
+              ))}
             </div>
           </section>
 
-          {/* Details Section */}
-          <section className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm space-y-6">
+          {/* 3. Description Content */}
+          <section className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm space-y-4">
             <input
-              placeholder="Product Title"
+              placeholder="Toy Title"
               className="w-full text-3xl font-black border-none focus:ring-0 p-0"
               value={product.title}
               onChange={(e) =>
@@ -273,7 +220,7 @@ export default function AddProductFullPage() {
               }
             />
             <textarea
-              placeholder="Product Description"
+              placeholder="Detailed description..."
               rows={6}
               className="w-full border-none focus:ring-0 p-0 text-gray-600 text-lg"
               value={product.description}
@@ -286,40 +233,40 @@ export default function AddProductFullPage() {
 
         {/* Sidebar */}
         <div className="lg:col-span-4 space-y-8">
+          {/* 4. Pricing & Stock */}
           <section className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm space-y-4">
             <h2 className="font-bold text-lg flex items-center gap-2">
-              <ArchiveBoxIcon className="h-5 w-5 text-indigo-500" /> Inventory
+              <ArchiveBoxIcon className="h-5 w-5 text-indigo-500" /> Logistics
             </h2>
-            <div>
-              <label className="text-[10px] font-black text-gray-400 uppercase">
-                Current Stock
-              </label>
-              <input
-                type="number"
-                className="w-full bg-gray-50 border-none rounded-xl p-4 font-bold"
-                value={product.stock || ""}
-                onChange={(e) =>
-                  setProduct({
-                    ...product,
-                    stock: e.target.value === "" ? 0 : parseInt(e.target.value),
-                  })
-                }
-              />
-            </div>
             <div className="grid grid-cols-2 gap-4">
+              <div className="col-span-2">
+                <label className="text-[10px] font-black text-gray-400 uppercase">
+                  Stock
+                </label>
+                <input
+                  type="number"
+                  className="w-full bg-gray-50 border-none rounded-xl p-3"
+                  value={product.stock || ""}
+                  onChange={(e) =>
+                    setProduct({
+                      ...product,
+                      stock: parseInt(e.target.value) || 0,
+                    })
+                  }
+                />
+              </div>
               <div>
                 <label className="text-[10px] font-black text-gray-400 uppercase">
                   Price
                 </label>
                 <input
                   type="number"
-                  className="w-full bg-gray-50 border-none rounded-xl p-4 font-bold text-indigo-600"
+                  className="w-full bg-gray-50 border-none rounded-xl p-3"
                   value={product.price || ""}
                   onChange={(e) =>
                     setProduct({
                       ...product,
-                      price:
-                        e.target.value === "" ? 0 : parseFloat(e.target.value),
+                      price: parseFloat(e.target.value) || 0,
                     })
                   }
                 />
@@ -330,17 +277,95 @@ export default function AddProductFullPage() {
                 </label>
                 <input
                   type="number"
-                  className="w-full bg-gray-50 border-none rounded-xl p-4 font-bold"
+                  className="w-full bg-gray-50 border-none rounded-xl p-3"
                   value={product.originalPrice || ""}
                   onChange={(e) =>
                     setProduct({
                       ...product,
-                      originalPrice:
-                        e.target.value === "" ? 0 : parseFloat(e.target.value),
+                      originalPrice: parseFloat(e.target.value) || 0,
                     })
                   }
                 />
               </div>
+            </div>
+          </section>
+
+          {/* 5. Features (MISSING FIELD ADDED) */}
+          <section className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm space-y-4">
+            <h2 className="font-bold text-lg flex items-center gap-2">
+              <ClipboardDocumentListIcon className="h-5 w-5 text-indigo-500" />{" "}
+              Features
+            </h2>
+            <div className="flex gap-2">
+              <input
+                className="flex-1 bg-gray-50 border-none rounded-xl p-2 text-sm"
+                placeholder="Add feature..."
+                value={newFeature}
+                onChange={(e) => setNewFeature(e.target.value)}
+              />
+              <button
+                onClick={addFeature}
+                className="bg-indigo-100 text-indigo-600 p-2 rounded-xl"
+              >
+                <PlusIcon className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {product.features.map((f, i) => (
+                <span
+                  key={i}
+                  className="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-lg text-xs font-bold flex items-center gap-1"
+                >
+                  {f}{" "}
+                  <XMarkIcon
+                    className="h-3 w-3 cursor-pointer"
+                    onClick={() =>
+                      setProduct({
+                        ...product,
+                        features: product.features.filter(
+                          (_, idx) => idx !== i
+                        ),
+                      })
+                    }
+                  />
+                </span>
+              ))}
+            </div>
+          </section>
+
+          {/* 6. Taxonomy & Ages */}
+          <section className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm space-y-4">
+            <h2 className="font-bold text-lg flex items-center gap-2">
+              <TagIcon className="h-5 w-5 text-indigo-500" /> Categorization
+            </h2>
+            <div>
+              <label className="text-[10px] font-black text-gray-400 uppercase">
+                Ages
+              </label>
+              <input
+                className="w-full bg-gray-50 border-none rounded-xl p-3"
+                placeholder="3+"
+                value={product.ages}
+                onChange={(e) =>
+                  setProduct({ ...product, ages: e.target.value })
+                }
+              />
+            </div>
+            <div>
+              <label className="text-[10px] font-black text-gray-400 uppercase">
+                Lego Pieces
+              </label>
+              <input
+                type="number"
+                className="w-full bg-gray-50 border-none rounded-xl p-3"
+                value={product.pieces || ""}
+                onChange={(e) =>
+                  setProduct({
+                    ...product,
+                    pieces: parseInt(e.target.value) || 0,
+                  })
+                }
+              />
             </div>
           </section>
         </div>

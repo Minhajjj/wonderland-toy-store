@@ -311,7 +311,7 @@ const ProductDetailPage = () => {
                 key={idx}
                 className="flex items-start gap-3 p-4 bg-white rounded-lg shadow-md border border-gray-200"
               >
-                <div className="bg-pink-500 text-white w-6 h-6 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0 mt-0.5">
+                <div className="bg-pink-500 text-white w-6 h-6 rounded-full flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">
                   ✓
                 </div>
                 <p className="text-gray-700">{feature}</p>

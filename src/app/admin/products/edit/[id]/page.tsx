@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { getProducts, updateProduct } from "@/lib/products";
-import { UnifiedProduct } from "@/src/types/product";
+import supabase from "../../../../../../lib/supabaseClient";
 import { ArrowPathIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 
@@ -12,29 +11,43 @@ export default function EditProductPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [product, setProduct] = useState<UnifiedProduct | null>(null);
+  const [product, setProduct] = useState<any>(null);
 
   useEffect(() => {
     async function loadProduct() {
-      const allProducts = await getProducts();
-      const found = allProducts.find((p) => String(p.id) === String(id));
-      if (found) setProduct(found as UnifiedProduct);
+      const { data, error } = await supabase
+        .from("products")
+        .select("*")
+        .eq("id", id)
+        .single();
+
+      if (data) setProduct(data);
       setLoading(false);
     }
-    loadProduct();
+    if (id) loadProduct();
   }, [id]);
 
   const handleUpdate = async () => {
     if (!product) return;
     setSaving(true);
     try {
-      await updateProduct(String(id), {
-        ...product,
-        available: product.stock > 0,
-      });
+      // Map back to snake_case for Supabase
+      const { error } = await supabase
+        .from("products")
+        .update({
+          title: product.title,
+          price: product.price,
+          description: product.description,
+          stock: product.stock,
+          available: (product.stock || 0) > 0,
+          specifications: product.specifications,
+        })
+        .eq("id", id);
+
+      if (error) throw error;
       router.push("/admin/products");
-    } catch (err) {
-      alert("Update failed");
+    } catch (err: any) {
+      alert("Update failed: " + err.message);
     } finally {
       setSaving(false);
     }
@@ -42,11 +55,14 @@ export default function EditProductPage() {
 
   if (loading)
     return (
-      <div className="p-20 text-center">
-        <ArrowPathIcon className="h-10 w-10 animate-spin mx-auto text-purple-500" />
+      <div className="p-20 text-center flex flex-col items-center gap-4">
+        <ArrowPathIcon className="h-10 w-10 animate-spin text-indigo-500" />
+        <p className="font-bold text-gray-500">Fetching Toy Details...</p>
       </div>
     );
-  if (!product) return <div>Product not found</div>;
+
+  if (!product)
+    return <div className="p-20 text-center">Product not found</div>;
 
   return (
     <div className="max-w-6xl mx-auto space-y-6 pb-20">
@@ -54,7 +70,7 @@ export default function EditProductPage() {
         <div className="flex items-center gap-4">
           <Link
             href="/admin/products"
-            className="p-2 rounded-xl border bg-white"
+            className="p-2 rounded-xl border bg-white hover:bg-gray-50 transition"
           >
             <ArrowLeftIcon className="h-5 w-5" />
           </Link>
@@ -65,61 +81,74 @@ export default function EditProductPage() {
         <button
           onClick={handleUpdate}
           disabled={saving}
-          className="bg-purple-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-purple-700 transition disabled:opacity-50"
+          className="bg-indigo-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-indigo-700 transition shadow-lg disabled:opacity-50 flex items-center gap-2"
         >
-          {saving ? "Saving Changes..." : "Update Product"}
+          {saving && <ArrowPathIcon className="h-5 w-5 animate-spin" />}
+          {saving ? "Saving..." : "Save Changes"}
         </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm space-y-4">
-          <label className="block text-sm font-bold text-gray-700">
-            Stock Quantity
-          </label>
-          <input
-            type="number"
-            className="w-full bg-gray-50 border-none rounded-xl px-4 py-3"
-            value={product.stock}
-            onChange={(e) =>
-              setProduct({ ...product, stock: parseInt(e.target.value) })
-            }
-          />
+        {/* Basic Info */}
+        <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm space-y-6">
+          <h3 className="font-bold text-lg">General Info</h3>
 
-          <label className="block text-sm font-bold text-gray-700">
-            Price ($)
-          </label>
-          <input
-            type="number"
-            className="w-full bg-gray-50 border-none rounded-xl px-4 py-3"
-            value={product.price}
-            onChange={(e) =>
-              setProduct({ ...product, price: parseFloat(e.target.value) })
-            }
-          />
+          <div className="space-y-2">
+            <label className="text-xs font-black text-gray-400 uppercase">
+              Stock Quantity
+            </label>
+            <input
+              type="number"
+              className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 font-bold"
+              value={product.stock ?? 0}
+              onChange={(e) =>
+                setProduct({ ...product, stock: parseInt(e.target.value) || 0 })
+              }
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-xs font-black text-gray-400 uppercase">
+              Price ($)
+            </label>
+            <input
+              type="number"
+              className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 font-bold text-indigo-600"
+              value={product.price ?? 0}
+              onChange={(e) =>
+                setProduct({
+                  ...product,
+                  price: parseFloat(e.target.value) || 0,
+                })
+              }
+            />
+          </div>
         </div>
 
-        <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm space-y-4">
-          <h3 className="font-bold">Quick Specifications</h3>
-          {Object.keys(product.specifications).map((key) => (
-            <div key={key}>
-              <label className="text-xs font-bold text-gray-400 uppercase">
-                {key}
-              </label>
-              <input
-                className="w-full bg-gray-50 border-none rounded-xl px-4 py-2 mt-1"
-                value={(product.specifications as any)[key]}
-                onChange={(e) =>
-                  setProduct({
-                    ...product,
-                    specifications: {
-                      ...product.specifications,
-                      [key]: e.target.value,
-                    },
-                  })
-                }
-              />
-            </div>
-          ))}
+        {/* Specifications */}
+        <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm space-y-6">
+          <h3 className="font-bold text-lg">Specifications</h3>
+          {product.specifications &&
+            Object.keys(product.specifications).map((key) => (
+              <div key={key} className="space-y-1">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                  {key}
+                </label>
+                <input
+                  className="w-full bg-gray-50 border-none rounded-xl px-4 py-2 font-medium"
+                  value={product.specifications[key] || ""}
+                  onChange={(e) =>
+                    setProduct({
+                      ...product,
+                      specifications: {
+                        ...product.specifications,
+                        [key]: e.target.value,
+                      },
+                    })
+                  }
+                />
+              </div>
+            ))}
         </div>
       </div>
     </div>
