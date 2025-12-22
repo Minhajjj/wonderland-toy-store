@@ -11,12 +11,14 @@ import {
   Cog6ToothIcon,
   XMarkIcon,
   RocketLaunchIcon,
+  ChatBubbleBottomCenterIcon, // Added for reviews
 } from "@heroicons/react/24/outline";
 
 const navigation = [
   { name: "Dashboard", href: "/admin", icon: Squares2X2Icon },
   { name: "Products", href: "/admin/products", icon: ShoppingBagIcon },
   { name: "Orders", href: "/admin/orders", icon: ClipboardDocumentListIcon },
+  { name: "Reviews", href: "/admin/reviews", icon: ChatBubbleBottomCenterIcon }, // Added
   { name: "Customers", href: "/admin/customers", icon: UsersIcon },
   { name: "Analytics", href: "/admin/analytics", icon: ChartBarIcon },
   { name: "Settings", href: "/admin/settings", icon: Cog6ToothIcon },
@@ -30,7 +32,6 @@ interface SidebarProps {
 export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
   const pathname = usePathname();
 
-  // Your Brand Gradient Class
   const brandGradientText =
     "bg-clip-text text-transparent bg-gradient-to-r from-[#FF6B9D] via-[#9B59B6] to-[#4FA8D5]";
   const brandGradientBg =
@@ -38,7 +39,6 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full bg-white/80 backdrop-blur-xl border-r border-gray-100">
-      {/* Logo Area */}
       <div className="h-20 flex items-center px-8 border-b border-gray-50">
         <RocketLaunchIcon className="h-8 w-8 text-[#FF6B9D] mr-3" />
         <span
@@ -48,7 +48,6 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
         </span>
       </div>
 
-      {/* Nav Links */}
       <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
         <p className="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">
           Menu
@@ -78,7 +77,6 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
         })}
       </nav>
 
-      {/* User Profile Snippet at Bottom */}
       <div className="p-4 border-t border-gray-50">
         <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50/50">
           <div className={`h-10 w-10 rounded-full ${brandGradientBg} p-0.5`}>
@@ -101,7 +99,6 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
 
   return (
     <>
-      {/* Mobile Sidebar Overlay */}
       <div
         className={`fixed inset-0 z-50 lg:hidden ${
           mobileOpen ? "block" : "hidden"
@@ -121,7 +118,6 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
         </div>
       </div>
 
-      {/* Desktop Sidebar */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-72 lg:flex-col">
         <SidebarContent />
       </div>
