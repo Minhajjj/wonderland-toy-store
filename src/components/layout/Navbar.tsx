@@ -196,8 +196,6 @@ const Navbar = () => {
           </div>
         </div>
       </nav>
-
-      <div className="h-32"></div>
     </>
   );
 };

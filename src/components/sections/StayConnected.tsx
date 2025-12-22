@@ -1,132 +1,135 @@
-import { useState } from "react";
+"use client";
+
+import { useState, useMemo } from "react";
+import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
+import { MdCameraAlt } from "react-icons/md";
+import { IoSparklesSharp } from "react-icons/io5";
 import "swiper/css";
-
-// Now 30 images for a fuller look
-const posts = Array.from({ length: 30 }).map(
-  (_, i) => `https://i.pravatar.cc/300?img=${i + 40}`
-);
 
 const StayConnected = () => {
   const [email, setEmail] = useState("");
 
-  const handleSubscribe = () => {
-    if (email) {
-      alert(`Thanks for subscribing with ${email}!`);
-      setEmail("");
-    }
-  };
+  const posts = useMemo(() => {
+    return Array.from({ length: 24 }).map((_, i) => `/moments/toy${i + 1}.jpg`);
+  }, []);
 
   return (
-    <section className="py-16 bg-transparent relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
-        <h2 className="text-4xl font-extrabold text-gray-900 text-center mb-3">
-          Stay Connected ✨
-        </h2>
-        <p className="text-center max-w-2xl mx-auto text-gray-700 mb-16">
-          Join the magical WonderLand community! Explore real moments and never
-          miss an update.
-        </p>
+    <section className="py-20 overflow-hidden">
+      <div className="max-w-[1400px] mx-auto px-8">
+        <div className="flex flex-col lg:flex-row items-center gap-14">
+          {/* Left Side: Newsletter (Increased Scale) */}
+          <div className="w-full lg:w-[35%] space-y-8">
+            <div className="space-y-3">
+              <h2 className="text-5xl font-black text-gray-900 leading-tight">
+                Stay <br /> Connected
+                <IoSparklesSharp className="inline-block text-pink-500 ml-2 animate-bounce text-3xl" />
+              </h2>
+              <p className="text-gray-500 text-lg font-medium leading-relaxed">
+                Join the magical WonderLand community! Real moments shared by
+                our adventurers.
+              </p>
+            </div>
 
-        <div className="relative flex flex-col lg:flex-row items-start gap-12">
-          {/* Floating Left Section */}
-          <div className="w-full lg:w-1/2 relative">
-            <h3 className="text-3xl font-bold text-gray-900 mb-3">
-              Wonderland Moments 📸
-            </h3>
-            <p className="text-gray-700 mb-6 text-base">
-              Magical memories shared by our amazing parents and their little
-              adventurers.
-            </p>
-
-            {/* Signup section - MORE COMPACT */}
-            <div className="rounded-2xl p-8 shadow-2xl border border-pink-200 bg-white/95 backdrop-blur-sm">
-              <div className="flex items-start justify-between mb-6">
-                <div className="flex-1">
-                  <h4 className="text-2xl font-bold text-gray-900 mb-2">
-                    Join our newsletter 💌
-                  </h4>
-                  <p className="text-gray-600 text-base leading-relaxed">
-                    Get special offers, toy guides, and updates straight into your inbox!
-                  </p>
-                </div>
+            <div className="p-10 rounded-[3rem] border border-pink-50 bg-white shadow-2xl shadow-pink-100/50 relative">
+              <div className="absolute top-0 right-0 p-4 opacity-10">
+                <MdCameraAlt size={80} />
               </div>
+              <h4 className="text-2xl font-bold text-gray-900 mb-2">
+                Join our newsletter
+              </h4>
+              <p className="text-sm text-gray-500 mb-8">
+                Get exclusive toy guides and magical updates.
+              </p>
 
-              <div className="flex gap-3">
+              <div className="space-y-3">
                 <input
                   type="email"
-                  placeholder="your@email.com"
+                  placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="flex-1 px-5 py-4 rounded-xl border-2 border-gray-300 focus:outline-none focus:border-pink-400 text-base transition-all"
+                  className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:border-pink-300 focus:bg-white outline-none transition-all font-medium"
                 />
-                <button 
-                  onClick={handleSubscribe}
-                  className="bg-gradient-to-r from-pink-500 to-purple-500 text-white font-bold px-8 py-4 rounded-xl hover:from-pink-600 hover:to-purple-600 duration-300 shadow-lg text-base whitespace-nowrap transform hover:scale-[1.02] transition-transform">
-                  Subscribe
+                <button className="w-full bg-indigo-600 text-white font-bold py-4 rounded-2xl hover:bg-pink-600 shadow-lg shadow-indigo-100 transition-all active:scale-95">
+                  Subscribe Now
                 </button>
               </div>
             </div>
           </div>
 
-          {/* Social media area - HORIZONTAL LAYOUT */}
-          <div className="w-full lg:flex-1 relative space-y-4">
-            {/* First row - horizontal spread */}
-            <div className="flex gap-3 overflow-hidden">
-              {posts.slice(0, 6).map((p, i) => (
+          {/* Right Side: Expanded Mosaic + Smooth Slider */}
+          <div className="w-full lg:w-[65%] space-y-4">
+            {/* Row 1: Larger Wide Mosaic */}
+            <div className="flex gap-4 h-64">
+              <div className="relative flex-[2] rounded-[2.5rem] overflow-hidden shadow-xl group">
+                <Image
+                  src={posts[0]}
+                  alt="Toy"
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-1000"
+                />
+              </div>
+              <div className="relative flex-1 rounded-[2.5rem] overflow-hidden shadow-xl group">
+                <Image
+                  src={posts[1]}
+                  alt="Toy"
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-1000"
+                />
+              </div>
+              <div className="relative flex-1 rounded-[2.5rem] overflow-hidden shadow-xl group">
+                <Image
+                  src={posts[2]}
+                  alt="Toy"
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-1000"
+                />
+              </div>
+            </div>
+
+            {/* Row 2: Wider Secondary Icons */}
+            <div className="flex gap-4 h-32">
+              {posts.slice(3, 8).map((src, i) => (
                 <div
                   key={i}
-                  className="flex-shrink-0"
-                  style={{ width: i % 3 === 0 ? '280px' : '180px' }}
+                  className="relative flex-1 rounded-2xl overflow-hidden shadow-md border border-gray-50 group"
                 >
-                  <img
-                    src={p}
-                    alt={`Wonderland moment ${i + 1}`}
-                    className="rounded-2xl shadow-lg object-cover w-full h-36"
+                  <Image
+                    src={src}
+                    alt="Toy"
+                    fill
+                    className="object-cover group-hover:rotate-3 group-hover:scale-110 transition-transform duration-500"
                   />
                 </div>
               ))}
             </div>
 
-            {/* Second row - horizontal spread */}
-            <div className="flex gap-3 overflow-hidden">
-              {posts.slice(6, 11).map((p, i) => (
-                <div
-                  key={i}
-                  className="flex-shrink-0 w-48"
-                >
-                  <img
-                    src={p}
-                    alt={`Wonderland moment ${i + 7}`}
-                    className="rounded-2xl shadow-lg object-cover w-full h-36"
-                  />
-                </div>
-              ))}
-            </div>
-
-            {/* Infinite slider - horizontal */}
-            <div className="pt-2">
+            {/* Row 3: THE SMOOTH CONTINUOUS SLIDER */}
+            <div className="pt-4">
               <Swiper
                 modules={[Autoplay]}
                 slidesPerView="auto"
-                spaceBetween={12}
-                loop
-                autoplay={{ delay: 0, disableOnInteraction: false }}
-                speed={8000}
-                breakpoints={{
-                  320: { slidesPerView: 2.5 },
-                  640: { slidesPerView: 3.5 },
-                  1024: { slidesPerView: 5.5 }
+                spaceBetween={16}
+                loop={true}
+                speed={6000} // Higher speed = Slower, smoother crawl
+                allowTouchMove={false}
+                autoplay={{
+                  delay: 0,
+                  disableOnInteraction: false,
                 }}
+                className="linear-swiper"
               >
-                {[...posts, ...posts, ...posts].map((p, i) => (
-                  <SwiperSlide key={i} style={{ width: '180px' }}>
-                    <img
-                      src={p}
-                      alt={`Wonderland slider ${i + 1}`}
-                      className="rounded-2xl shadow-lg h-36 w-full object-cover"
-                    />
+                {posts.slice(8).map((src, i) => (
+                  <SwiperSlide key={i} style={{ width: "160px" }}>
+                    <div className="relative h-28 w-full rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow">
+                      <Image
+                        src={src}
+                        alt="Slider"
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
                   </SwiperSlide>
                 ))}
               </Swiper>
@@ -134,6 +137,12 @@ const StayConnected = () => {
           </div>
         </div>
       </div>
+
+      <style jsx global>{`
+        .linear-swiper .swiper-wrapper {
+          transition-timing-function: linear !important;
+        }
+      `}</style>
     </section>
   );
 };
