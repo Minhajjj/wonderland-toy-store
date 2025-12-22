@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Scrollbar } from "swiper/modules";
 import "swiper/css";
@@ -34,7 +35,6 @@ const ProductCard: React.FC<ProductCardSliderProps> = ({ filterTag }) => {
       try {
         const data = await getProducts();
         if (data) {
-          // Mapping DB result to match our UI needs
           setProducts(data as any);
         }
       } catch (error) {
@@ -61,50 +61,65 @@ const ProductCard: React.FC<ProductCardSliderProps> = ({ filterTag }) => {
           spaceBetween={20}
           slidesPerView={5}
           scrollbar={{ draggable: true }}
-          // RESTORED: Exactly your original breakpoints to fix the card length/width
           breakpoints={{
             640: { slidesPerView: 1 },
             768: { slidesPerView: 2 },
             1024: { slidesPerView: 5 },
           }}
+          // Ensures all slides in a row match the height of the tallest one
+          className="pb-10"
         >
           {filteredProducts.map((product) => (
-            <SwiperSlide key={product.id} className="flex justify-center mb-7">
-              {/* RESTORED: Exactly your original card classes and padding */}
-              <div className="bg-white shadow-lg rounded-xl p-4 flex flex-col min-w-[200px]">
-                <img
-                  src={product.main_image} // From DB
-                  alt={product.title}
-                  className="w-full h-48 object-cover rounded-lg mb-4"
-                />
-
-                <div className="flex items-center mb-2 gap-3 text-left">
-                  <div className="flex items-center">
-                    <IoStarSharp className="text-yellow-400 mr-1" />
-                    <span className="text-gray-600">{product.rating}</span>
+            <SwiperSlide key={product.id} className="h-full mb-7">
+              <Link href={`/products/${product.id}`} className="block h-full">
+                {/* FIX 1: added 'h-full' to link and div 
+                   FIX 2: added 'min-h-[460px]' to ensure cards stay same size 
+                */}
+                <div className="bg-white shadow-lg rounded-xl p-4 flex flex-col h-full min-h-[460px] cursor-pointer border border-transparent hover:border-pink-200 transition-all">
+                  {/* FIX 3: Fixed height container with object-contain to prevent image stretching */}
+                  <div className="w-full h-48 mb-4 bg-gray-50 rounded-lg overflow-hidden flex items-center justify-center">
+                    <img
+                      src={product.main_image}
+                      alt={product.title}
+                      className="w-full h-full object-contain"
+                    />
                   </div>
 
-                  <div className="flex items-center">
-                    <LuCake className="mr-1" />
-                    <span className="text-gray-600">{product.age_range}</span>
+                  <div className="flex items-center mb-2 gap-3 text-left">
+                    <div className="flex items-center">
+                      <IoStarSharp className="text-yellow-400 mr-1" />
+                      <span className="text-gray-600 text-sm">
+                        {product.rating}
+                      </span>
+                    </div>
+                    <div className="flex items-center">
+                      <LuCake className="mr-1 text-gray-500" />
+                      <span className="text-gray-600 text-sm">
+                        {product.age_range}
+                      </span>
+                    </div>
+                    <div className="flex items-center">
+                      <PiJar className="mr-1 text-gray-500" />
+                      <span className="text-gray-600 text-sm">
+                        {product.stock}
+                      </span>
+                    </div>
                   </div>
 
-                  <div className="flex items-center">
-                    <PiJar className="mr-1" />
-                    <span className="text-gray-600">{product.stock}</span>
+                  {/* FIX 4: line-clamp-2 ensures title always takes 2 lines max, keeping buttons aligned */}
+                  <h2 className="text-lg font-semibold mb-2 text-left line-clamp-2 h-[56px]">
+                    {product.title}
+                  </h2>
+
+                  {/* FIX 5: flex-grow pushes the price and button to the very bottom */}
+                  <div className="mt-auto">
+                    <p className="text-[#FF6B9D] font-black text-xl mb-3 text-left">
+                      ${product.price}
+                    </p>
+                    <Secondary_Button text="Add to Bag" />
                   </div>
                 </div>
-
-                <h2 className="text-lg font-semibold mb-2 text-left">
-                  {product.title}
-                </h2>
-
-                <p className="text-[#FF6B9D] font-bold mb-3 mt-7 text-left">
-                  ${product.price}
-                </p>
-
-                <Secondary_Button text="Add to Bag" />
-              </div>
+              </Link>
             </SwiperSlide>
           ))}
         </Swiper>
